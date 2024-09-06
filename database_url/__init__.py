@@ -4,7 +4,7 @@ from ._main import DatabaseUrlError, InvalidEngine, from_django_item, generate
 
 try:
     __version__ = importlib_metadata.version(__name__)
-except importlib_metadata.PackageNotFoundError:
+except importlib_metadata.PackageNotFoundError:  # pragma: no cover
     __version__ = "0.1.0"
 
 __all__ = (
