@@ -1,11 +1,15 @@
 [tool.poetry]
-name = "database-url"
+name = "tortoise-database-url"
 version = "0.1.0"
 description = "Make it easy to generate database url."
 homepage = "https://github.com/waketzheng/database-url"
 repository = "https://github.com/waketzheng/database-url.git"
 authors = ["Waket Zheng <waketzheng@gmail.com>"]
 readme = "README.md"
+keywords = ["database-url", "database_url", "tortoise-orm"]
+packages = [
+    { include = "database_url" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"

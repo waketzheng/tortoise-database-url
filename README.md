@@ -1,6 +1,6 @@
 # database-url
-![Python Versions](https://img.shields.io/pypi/pyversions/database-url)
-[![LatestVersionInPypi](https://img.shields.io/pypi/v/database-url.svg?style=flat)](https://pypi.python.org/pypi/database-url)
+![Python Versions](https://img.shields.io/pypi/pyversions/tortoise-database-url)
+[![LatestVersionInPypi](https://img.shields.io/pypi/v/tortoise-database-url.svg?style=flat)](https://pypi.org/project/tortoise-database-url/)
 [![GithubActionResult](https://github.com/waketzheng/database-url/workflows/ci/badge.svg)](https://github.com/waketzheng/database-url/actions?query=workflow:ci)
 [![Coverage Status](https://coveralls.io/repos/github/waketzheng/database-url/badge.svg?branch=main)](https://coveralls.io/github/waketzheng/database-url?branch=main)
 ![Mypy coverage](https://img.shields.io/badge/mypy-100%25-green.svg)
@@ -11,7 +11,7 @@ Some async functions that using anyio, and toolkit for excel read.
 ## Installation
 
 ```bash
-pip install database-url
+pip install tortoise-database-url
 ```
 
 ## Usage
