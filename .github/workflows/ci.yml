@@ -60,8 +60,9 @@ jobs:
       - name: Check code style and Type Hint
         if: matrix.python-version == 3.11
         run: |
-          poetry run pip install fast-dev-cli
-          poetry run fast check
+          poetry run ruff format --check .
+          poetry run ruff check .
+          poetry run mypy .
           poetry run bandit -r database_url/
       - name: build
         run: poetry build
