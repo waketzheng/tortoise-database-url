@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tortoise-database-url"
-version = "0.1.0"
+version = "0.1.1"
 description = "Make it easy to generate database url."
 homepage = "https://github.com/waketzheng/database-url"
 repository = "https://github.com/waketzheng/database-url.git"
