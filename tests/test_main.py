@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -70,6 +71,7 @@ def test_generate() -> None:
     assert generate(None) == "sqlite://:memory:"
     assert generate() == "sqlite://db.sqlite3"
     assert generate(BASE_DIR / "db.sqlite3") == f"sqlite://{BASE_DIR/'db.sqlite3'}"
+
     # postgresql
     default_postgres_port: int = DbDefaultEnum.postgres.value[-1]
     assert (
@@ -83,6 +85,7 @@ def test_generate() -> None:
     assert generate("my_db", engine="psycopg") == (
         f"psycopg://postgres:postgres@127.0.0.1:{default_postgres_port}/my_db"
     )
+
     # MySQL & MariaDB
     default_mysql_port: int = DbDefaultEnum.mysql.value[-1]
     assert (
@@ -90,14 +93,49 @@ def test_generate() -> None:
         == generate("my_db", engine="mariadb")
         == (f"mysql://root:123456@127.0.0.1:{default_mysql_port}/my_db")
     )
+
+    # Other
     assert (
         generate("test_db", "mssql") == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db"
     )
-    # Other
     assert (
         generate("test_db", "mssql", driver="ODBC Driver 18 for SQL Server")
         == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db?driver=ODBC Driver 18 for SQL Server"
     )
+    assert (
+        generate("test_db", engine="oracle")
+        == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
+    )
 
     with pytest.raises(InvalidEngine):
         generate(engine="mongo")
+
+
+def test_generate_with_env(monkeypatch) -> None:
+    monkeypatch.setenv("DB_USER", "admin")
+    monkeypatch.setenv("DB_PASS", "secret@")
+    monkeypatch.setenv("DB_HOST", "db.mydomain.com")
+    monkeypatch.setenv("DB_PORT", "5555")
+    db_url = generate(
+        "my_db",
+        engine="postgres",
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+    )
+    assert db_url == "postgres://admin:secret%40@db.mydomain.com:5555/my_db"
+
+    monkeypatch.delenv("DB_USER", raising=False)
+    monkeypatch.delenv("DB_PASS", raising=False)
+    monkeypatch.delenv("DB_HOST", raising=False)
+    monkeypatch.delenv("DB_PORT", raising=False)
+    db_url = generate(
+        "my_db",
+        engine="postgres",
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+    )
+    assert db_url == "postgres://postgres:postgres@127.0.0.1:5432/my_db"
