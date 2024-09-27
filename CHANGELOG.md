@@ -4,7 +4,11 @@
 
 ### Feature
 
-- expose `DbDefaultEnum`
+- expose `DbDefaultEnum`.
+
+### Fixed
+
+- Fix mariadb engine does not convert to mysql.
 
 ## [0.1.1] - 2024-09-10
 

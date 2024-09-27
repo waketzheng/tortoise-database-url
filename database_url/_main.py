@@ -46,6 +46,7 @@ def generate(
         engine = engine.replace("postgresql", "postgres")
         default_user, default_pw, default_port = DbDefaultEnum.postgres.value
     elif engine in ("mysql", "mariadb"):
+        engine = "mysql"
         default_user, default_pw, default_port = DbDefaultEnum.mysql.value
     elif engine == "mssql":
         default_user, default_pw, default_port = DbDefaultEnum.mssql.value
@@ -70,4 +71,19 @@ def generate(
 
 
 def from_django_item(default: dict) -> str:
+    """Convert Django database to tortoie db_url format
+
+    Example::
+    ```py
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "db.sqlite3"
+        },
+    }
+
+    db_url = database_url.from_django_item(DATABASES["default"])
+    print(db_url)
+    # sqlte:////db.sqlite3
+    """
     return generate(**{k.lower(): v for k, v in default.items()})

@@ -3,7 +3,7 @@ from typing import Dict
 
 import pytest
 
-from database_url import InvalidEngine, from_django_item, generate
+from database_url import DbDefaultEnum, InvalidEngine, from_django_item, generate
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASES: Dict[str, dict] = {
@@ -70,9 +70,30 @@ def test_generate() -> None:
     assert generate(None) == "sqlite://:memory:"
     assert generate() == "sqlite://db.sqlite3"
     assert generate(BASE_DIR / "db.sqlite3") == f"sqlite://{BASE_DIR/'db.sqlite3'}"
+    # postgresql
+    default_postgres_port: int = DbDefaultEnum.postgres.value[-1]
+    assert (
+        generate("my_db", engine="postgres")
+        == generate("my_db", engine="postgresql")
+        == (f"postgres://postgres:postgres@127.0.0.1:{default_postgres_port}/my_db")
+    )
+    assert generate("my_db", engine="asyncpg") == (
+        f"asyncpg://postgres:postgres@127.0.0.1:{default_postgres_port}/my_db"
+    )
+    assert generate("my_db", engine="psycopg") == (
+        f"psycopg://postgres:postgres@127.0.0.1:{default_postgres_port}/my_db"
+    )
+    # MySQL & MariaDB
+    default_mysql_port: int = DbDefaultEnum.mysql.value[-1]
+    assert (
+        generate("my_db", engine="mysql")
+        == generate("my_db", engine="mariadb")
+        == (f"mysql://root:123456@127.0.0.1:{default_mysql_port}/my_db")
+    )
     assert (
         generate("test_db", "mssql") == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db"
     )
+    # Other
     assert (
         generate("test_db", "mssql", driver="ODBC Driver 18 for SQL Server")
         == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db?driver=ODBC Driver 18 for SQL Server"

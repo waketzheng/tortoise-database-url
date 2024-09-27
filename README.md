@@ -46,4 +46,6 @@ db_url = database_url.from_django_item(DATABASES["default"])
 print(db_url)
 # sqlte:///tmp/db.sqlite3
 ```
-See more at: https://github.com/waketzheng/database-url/blob/main/tests/test_main.py
+See more at:
+https://github.com/waketzheng/database-url/blob/main/tests/test_main.py
+https://tortoise.github.io/databases.html?h=database
