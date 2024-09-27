@@ -1,6 +1,12 @@
 import importlib.metadata as importlib_metadata
 
-from ._main import DatabaseUrlError, InvalidEngine, from_django_item, generate
+from ._main import (
+    DatabaseUrlError,
+    DbDefaultEnum,
+    InvalidEngine,
+    from_django_item,
+    generate,
+)
 
 try:
     __version__ = importlib_metadata.version(__name__)
@@ -13,6 +19,7 @@ __all__ = (
     "from_django_item",
     "InvalidEngine",
     "DatabaseUrlError",
+    "DbDefaultEnum",
 )
 
 

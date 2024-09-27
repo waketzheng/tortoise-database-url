@@ -1,4 +1,5 @@
 import re
+from enum import Enum
 from pathlib import Path
 from typing import Optional, Union
 from urllib.parse import quote_plus
@@ -8,6 +9,15 @@ class DatabaseUrlError(Exception): ...
 
 
 class InvalidEngine(DatabaseUrlError): ...
+
+
+class DbDefaultEnum(Enum):
+    """Db type -- username, password, port"""
+
+    postgres = "postgres", "postgres", 5432
+    mysql = "root", "123456", 3306
+    mssql = "sa", "Abcd12345678", 1432
+    oracle = "SYSTEM", "123456", 1521
 
 
 def should_quote(value: str) -> bool:
@@ -27,26 +37,20 @@ def generate(
         if name is None:
             name = ":memory:"
         return f"sqlite://{name}"
-    if (engine := engine.replace("postgresql", "postgres")) in (
+    if engine in (
         "postgres",
         "asyncpg",
         "psycopg",
+        "postgresql",
     ):
-        default_user = "postgres"
-        default_port = 5432
-        default_pw = "postgres"
+        engine = engine.replace("postgresql", "postgres")
+        default_user, default_pw, default_port = DbDefaultEnum.postgres.value
     elif engine in ("mysql", "mariadb"):
-        default_user = "root"
-        default_port = 3306
-        default_pw = "123456"
+        default_user, default_pw, default_port = DbDefaultEnum.mysql.value
     elif engine == "mssql":
-        default_user = "sa"
-        default_port = 1432
-        default_pw = "Abcd12345678"
+        default_user, default_pw, default_port = DbDefaultEnum.mssql.value
     elif engine == "oracle":
-        default_user = "SYSTEM"
-        default_port = 1521
-        default_pw = "123456"
+        default_user, default_pw, default_port = DbDefaultEnum.oracle.value
     else:
         raise InvalidEngine(engine)
     if port is None:

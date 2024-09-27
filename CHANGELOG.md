@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.1.2](Unreleased)
+
+### Feature
+
+- expose `DbDefaultEnum`
+
 ## [0.1.1] - 2024-09-10
 
 ### Docs
