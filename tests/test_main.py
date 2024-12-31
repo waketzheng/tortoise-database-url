@@ -4,7 +4,13 @@ from typing import Dict
 
 import pytest
 
-from database_url import DbDefaultEnum, InvalidEngine, from_django_item, generate
+from database_url import (
+    DbDefaultEnum,
+    EngineEnum,
+    InvalidEngine,
+    from_django_item,
+    generate,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATABASES: Dict[str, dict] = {
@@ -108,7 +114,7 @@ def test_generate() -> None:
     )
 
     with pytest.raises(InvalidEngine):
-        generate(engine="mongo")
+        generate(engine="mongo")  # type:ignore
 
 
 def test_generate_with_env(monkeypatch) -> None:
@@ -133,6 +139,15 @@ def test_generate_with_env(monkeypatch) -> None:
     db_url = generate(
         "my_db",
         engine="postgres",
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+    )
+    assert db_url == "postgres://postgres:postgres@127.0.0.1:5432/my_db"
+    db_url = generate(
+        "my_db",
+        engine=EngineEnum.postgres,
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASS"),
         host=os.getenv("DB_HOST"),

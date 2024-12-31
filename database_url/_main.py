@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import re
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal
 from urllib.parse import quote_plus
 
 
@@ -20,17 +22,52 @@ class DbDefaultEnum(Enum):
     oracle = "SYSTEM", "123456", 1521
 
 
+class EngineEnum(Enum):
+    sqlite = auto()
+    mysql = auto()
+    postgres = auto()
+    mssql = auto()
+    oracle = auto()
+
+
 def should_quote(value: str) -> bool:
     return not re.match(r"[-%\w]+$", value)
 
 
 def generate(
-    name: Union[Path, str, None] = "db.sqlite3",
+    name: Path | str | None = "db.sqlite3",
+    engine: EngineEnum
+    | Literal[
+        "sqlite",
+        "postgres",
+        "mysql",
+        "postgres",
+        "mssql",
+        "oracle",
+        "sqlite3",
+        "asyncpg",
+        "psycopg",
+        "postgresql",
+        "mariadb",
+    ] = "sqlite",
+    host: str | None = None,
+    user: str | None = None,
+    password: str | None = None,
+    port: str | int | None = None,
+    **extras,
+) -> str:
+    if isinstance(engine, EngineEnum):
+        return _generate(name, engine.name, host, user, password, port, **extras)
+    return _generate(name, engine, host, user, password, port, **extras)
+
+
+def _generate(
+    name: Path | str | None = "db.sqlite3",
     engine: str = "sqlite",
-    host: Optional[str] = None,
-    user: Optional[str] = None,
-    password: Optional[str] = None,
-    port: Union[str, int, None] = None,
+    host: str | None = None,
+    user: str | None = None,
+    password: str | None = None,
+    port: str | int | None = None,
     **extras,
 ) -> str:
     if engine == "sqlite" or (engine := engine.split(".")[-1]) in ("sqlite", "sqlite3"):
@@ -86,4 +123,4 @@ def from_django_item(default: dict) -> str:
     print(db_url)
     # sqlte:////db.sqlite3
     """
-    return generate(**{k.lower(): v for k, v in default.items()})
+    return _generate(**{k.lower(): v for k, v in default.items()})
