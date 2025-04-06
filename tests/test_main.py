@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import Dict
 
 import pytest
 
@@ -13,7 +14,7 @@ from database_url import (
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATABASES: Dict[str, dict] = {
+DATABASES: dict[str, dict] = {
     "default": {
         "ENGINE": "django.db.backends.oracle",
         "NAME": "xe",
@@ -54,18 +55,11 @@ def test_django_item() -> None:
         == "oracle://a_user:a_password@dbprod01ned.mycompany.com:1540/xe"
     )
     assert (
-        from_django_item(DATABASES["MySQL/MariaDB"])
-        == "mysql://root:123456@127.0.0.1:3306/test_1"
+        from_django_item(DATABASES["MySQL/MariaDB"]) == "mysql://root:123456@127.0.0.1:3306/test_1"
     )
-    assert (
-        from_django_item(DATABASES["psql"])
-        == "postgres://postgres:postgres@127.0.0.1:5432/None"
-    )
-    assert (
-        from_django_item(DATABASES["oracle"])
-        == "oracle://SYSTEM:123456@127.0.0.1:1521/"
-    )
-    assert from_django_item(DATABASES["sqlite"]) == f"sqlite://{BASE_DIR/'test.db'}"
+    assert from_django_item(DATABASES["psql"]) == "postgres://postgres:postgres@127.0.0.1:5432/None"
+    assert from_django_item(DATABASES["oracle"]) == "oracle://SYSTEM:123456@127.0.0.1:1521/"
+    assert from_django_item(DATABASES["sqlite"]) == f"sqlite://{BASE_DIR / 'test.db'}"
     assert (
         from_django_item(DATABASES["complex_password"])
         == from_django_item(DATABASES["quoted_password"])
@@ -76,7 +70,7 @@ def test_django_item() -> None:
 def test_generate() -> None:
     assert generate(None) == "sqlite://:memory:"
     assert generate() == "sqlite://db.sqlite3"
-    assert generate(BASE_DIR / "db.sqlite3") == f"sqlite://{BASE_DIR/'db.sqlite3'}"
+    assert generate(BASE_DIR / "db.sqlite3") == f"sqlite://{BASE_DIR / 'db.sqlite3'}"
 
     # postgresql
     default_postgres_port: int = DbDefaultEnum.postgres.value[-1]
@@ -101,17 +95,12 @@ def test_generate() -> None:
     )
 
     # Other
-    assert (
-        generate("test_db", "mssql") == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db"
-    )
+    assert generate("test_db", "mssql") == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db"
     assert (
         generate("test_db", "mssql", driver="ODBC Driver 18 for SQL Server")
         == "mssql://sa:Abcd12345678@127.0.0.1:1432/test_db?driver=ODBC Driver 18 for SQL Server"
     )
-    assert (
-        generate("test_db", engine="oracle")
-        == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
-    )
+    assert generate("test_db", engine="oracle") == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
 
     with pytest.raises(InvalidEngine):
         generate(engine="mongo")  # type:ignore

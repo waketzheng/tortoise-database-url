@@ -56,6 +56,20 @@ def generate(
     port: str | int | None = None,
     **extras,
 ) -> str:
+    """Generate db url with password quoted
+
+    :param name: database name, if None and engine is sqlite, it will be :memory:
+    :param engine: connection engine that supported by tortoise-orm
+    :param host: db host, default is '127.0.0.1'
+    :param user: db user, default to be value of DbDefaultEnum
+    :param password: db password, default to be value of DbDefaultEnum
+    :param port: db port, default to be value of DbDefaultEnum
+    :param extras: kwargs that will be appended behind '?'
+
+    Usage::
+        >>> generate('mydb', engine='postgres', password='me@qq.com')
+        'postgres://postgres:me%40qq.com@127.0.0.1:5432/mydb'
+    """
     if isinstance(engine, EngineEnum):
         return _generate(name, engine.name, host, user, password, port, **extras)
     return _generate(name, engine, host, user, password, port, **extras)

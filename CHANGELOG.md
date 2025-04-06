@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.0] - 2025-04-06
+
+### Changed
+
+- Use project section
+- Drop support for Python3.8
+
 ## [0.1.2] - 2024-09-27
 
 ### Feature
