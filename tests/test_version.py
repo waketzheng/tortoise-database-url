@@ -1,4 +1,4 @@
-import subprocess
+import subprocess  # nosec
 import sys
 from pathlib import Path
 

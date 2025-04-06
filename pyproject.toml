@@ -22,6 +22,10 @@ packages = [
 fast-dev-cli = "^0.14.0"
 bandit = "^1.8.3"
 
+[tool.poetry.group.ci.dependencies]
+coveralls = {git = "https://github.com/waketzheng/coveralls-python", python="^3.9"}
+ruff = "^0.11.4"
+
 [tool.ruff]
 line-length = 100
 
@@ -35,6 +39,9 @@ extend-select = [
     "C4", # flake8-comprehensions
     "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
 ]
+
+[tool.bandit]
+exclude_dirs = ["tests", "fastapi_cdn_host/cli.py", "scripts", "examples", ".venv"]
 
 [build-system]
 requires = ["poetry-plugin-version"]

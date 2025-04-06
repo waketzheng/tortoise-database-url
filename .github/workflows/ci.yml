@@ -48,7 +48,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction --no-root --all-extras --all-groups
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: 1
       #----------------------------------------------
@@ -59,18 +59,16 @@ jobs:
       - name: Check code style and Type Hint
         if: matrix.python-version == 3.11
         run: |
-          poetry run ruff format --check .
-          poetry run ruff check .
+          poetry run ruff format --check
+          poetry run ruff check
           poetry run mypy .
-          poetry run bandit -r database_url/
+          poetry run bandit -c pyproject.toml -r .
       - name: build
         run: poetry build
       - name: Test with pytest
         run: poetry run coverage run -m pytest
       - name: Upload Coverage
-        run: |
-          pip3 install --upgrade coveralls
-          coveralls --service=github
+        run: poetry run coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
