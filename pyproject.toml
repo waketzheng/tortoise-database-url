@@ -24,7 +24,7 @@ bandit = "^1.8.3"
 
 [tool.poetry.group.ci.dependencies]
 coveralls = {git = "https://github.com/waketzheng/coveralls-python"}
-ruff = "^0.11.4"
+ruff = "^0.11.7"
 
 [tool.ruff]
 line-length = 100
