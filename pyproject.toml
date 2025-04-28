@@ -19,7 +19,7 @@ packages = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-fast-dev-cli = "^0.14.0"
+fast-dev-cli = "^0.15.0"
 bandit = "^1.8.3"
 
 [tool.poetry.group.ci.dependencies]
