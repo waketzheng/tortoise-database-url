@@ -41,7 +41,7 @@ _build:
 	poetry build --clean
 build: deps _build
 
-ci: 
+ci:
 	poetry install --all-extras --all-groups
 	$(MAKE) _build
 	$(MAKE) _check
