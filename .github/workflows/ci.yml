@@ -56,6 +56,7 @@ jobs:
       #----------------------------------------------
       - name: Install library
         run: poetry install --no-interaction
+      - uses: astral-sh/ruff-action@v3
       - name: Check code style and Type Hint
         if: matrix.python-version == 3.11
         run: |

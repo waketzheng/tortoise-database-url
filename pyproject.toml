@@ -23,8 +23,7 @@ fast-dev-cli = "^0.15.0"
 bandit = "^1.8.3"
 
 [tool.poetry.group.ci.dependencies]
-coveralls = {git = "https://github.com/waketzheng/coveralls-python"}
-ruff = "^0.11.4"
+coveralls = {git = "https://github.com/waketzheng/coveralls-python", rev = "4.1.1"}
 
 [tool.ruff]
 line-length = 100
