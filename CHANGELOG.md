@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.3.0] - 2025-06-05
+
+### Changed
+
+- Use 'DbDefaultParams' to replace 'DbDefaultEnum'
+- Migrate from poetry to pdm
+
 ## [0.2.0] - 2025-04-06
 
 ### Changed

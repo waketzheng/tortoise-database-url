@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
 from typing import Literal
@@ -13,13 +14,14 @@ class DatabaseUrlError(Exception): ...
 class InvalidEngine(DatabaseUrlError): ...
 
 
-class DbDefaultEnum(Enum):
-    """Db type -- username, password, port"""
+@dataclass
+class DbDefaultParams:
+    """Db param tuple -- username, password, port"""
 
-    postgres = "postgres", "postgres", 5432
-    mysql = "root", "123456", 3306
-    mssql = "sa", "Abcd12345678", 1432
-    oracle = "SYSTEM", "123456", 1521
+    postgres: tuple[str, str, int] = "postgres", "postgres", 5432
+    mysql: tuple[str, str, int] = "root", "123456", 3306
+    mssql: tuple[str, str, int] = "sa", "Abcd12345678", 1432
+    oracle: tuple[str, str, int] = "SYSTEM", "123456", 1521
 
 
 class EngineEnum(Enum):
@@ -95,14 +97,14 @@ def _generate(
         "postgresql",
     ):
         engine = engine.replace("postgresql", "postgres")
-        default_user, default_pw, default_port = DbDefaultEnum.postgres.value
+        default_user, default_pw, default_port = DbDefaultParams.postgres
     elif engine in ("mysql", "mariadb"):
         engine = "mysql"
-        default_user, default_pw, default_port = DbDefaultEnum.mysql.value
+        default_user, default_pw, default_port = DbDefaultParams.mysql
     elif engine == "mssql":
-        default_user, default_pw, default_port = DbDefaultEnum.mssql.value
+        default_user, default_pw, default_port = DbDefaultParams.mssql
     elif engine == "oracle":
-        default_user, default_pw, default_port = DbDefaultEnum.oracle.value
+        default_user, default_pw, default_port = DbDefaultParams.oracle
     else:
         raise InvalidEngine(engine)
     if port is None:

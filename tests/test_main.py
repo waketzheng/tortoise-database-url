@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from database_url import (
-    DbDefaultEnum,
+    DbDefaultParams,
     EngineEnum,
     InvalidEngine,
     from_django_item,
@@ -73,7 +73,7 @@ def test_generate() -> None:
     assert generate(BASE_DIR / "db.sqlite3") == f"sqlite://{BASE_DIR / 'db.sqlite3'}"
 
     # postgresql
-    default_postgres_port: int = DbDefaultEnum.postgres.value[-1]
+    default_postgres_port: int = DbDefaultParams.postgres[-1]
     assert (
         generate("my_db", engine="postgres")
         == generate("my_db", engine="postgresql")
@@ -87,7 +87,7 @@ def test_generate() -> None:
     )
 
     # MySQL & MariaDB
-    default_mysql_port: int = DbDefaultEnum.mysql.value[-1]
+    default_mysql_port: int = DbDefaultParams.mysql[-1]
     assert (
         generate("my_db", engine="mysql")
         == generate("my_db", engine="mariadb")
