@@ -13,6 +13,10 @@ Toolkit for TortoiseORM to generate database url from Django DATABASES item form
 ```bash
 pip install tortoise-database-url
 ```
+Or by pdm:
+```bash
+pdm add tortoise-database-url
+```
 
 ## Usage
 
