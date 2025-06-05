@@ -11,38 +11,45 @@ help:
 	@echo  "    lint    Auto-formats the code and check type hints"
 
 up:
-	poetry run fast upgrade
+	pdm run fast upgrade
+
+lock:
+	pdm lock --group :all --strategy inherit_metadata
 
 deps:
-	poetry install --all-extras
+	pdm install --verbose --group :all --without=ci --frozen
 
 bandit:
-	poetry run bandit -c pyproject.toml -r .
+	pdm run bandit -c pyproject.toml -r .
 
 _check:
-	poetry run fast check
-	$(MAKE) bandit
+	pdm run fast check --bandit
+	pdm run twine check dist/*
 check: deps _build _check
 
 _lint:
-	poetry run fast lint
+	pdm run fast lint
 	$(MAKE) bandit
 lint: deps _build _lint
 
 _test:
-	poetry run fast test
+	pdm run fast test
 test: deps _test
 
 _style:
-	poetry run fast lint --skip-mypy
+	pdm run fast lint --skip-mypy
 style: deps _style
 
 _build:
-	poetry build --clean
+	rm -fR dist/
+	pdm build
 build: deps _build
 
+publish: deps _build
+	pdm run fast upload
+
 ci:
-	poetry install --all-extras --all-groups
+	pdm sync -d -G :all
 	$(MAKE) _build
 	$(MAKE) _check
 	$(MAKE) _test
