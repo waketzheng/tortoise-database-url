@@ -48,6 +48,9 @@ build: deps _build
 publish: deps _build
 	pdm run fast upload
 
+venv314:
+	pdm venv create 3.14
+
 ci:
 	pdm sync -d -G :all
 	$(MAKE) _build
