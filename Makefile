@@ -1,5 +1,5 @@
 help:
-	@echo  "Development makefile"
+	@echo  "Development Makefile"
 	@echo
 	@echo  "Usage: make <target>"
 	@echo  "Targets:"
@@ -9,50 +9,79 @@ help:
 	@echo  "    test    Runs all tests"
 	@echo  "    style   Auto-formats the code"
 	@echo  "    lint    Auto-formats the code and check type hints"
+	@echo  "    build   Build wheel file and tar file from source to dist/"
 
 up:
-	pdm run fast upgrade
+	uv lock --upgrade
+	uv sync --frozen --inexact
+	python scripts/uv_pypi.py --quiet
 
 lock:
-	pdm lock --group :all --strategy inherit_metadata
+	uv lock --upgrade
+	python scripts/uv_pypi.py --quiet
+
+venv:
+	pdm venv create $(options) $(version)
+
+venv39:
+	$(MAKE) venv version=3.9
 
 deps:
-	pdm install --verbose --group :all --without=ci --frozen
+	uv sync --all-extras --all-groups --inexact $(options)
 
-bandit:
-	pdm run bandit -c pyproject.toml -r .
+start:
+	pre-commit install
+	$(MAKE) deps
 
 _check:
-	pdm run fast check --bandit
-	pdm run twine check dist/*
+	./scripts/check.py
 check: deps _build _check
 
 _lint:
-	pdm run fast lint
-	$(MAKE) bandit
+	fast lint $(options)
 lint: deps _build _lint
 
 _test:
-	pdm run fast test
+	fast test
 test: deps _test
 
 _style:
-	pdm run fast lint --skip-mypy
+	./scripts/format.py
 style: deps _style
 
 _build:
 	rm -fR dist/
-	pdm build
+	uv build
 build: deps _build
 
-publish: deps _build
-	pdm run fast upload
+bump_part = patch
 
-venv314:
-	pdm venv create 3.14
+_bump:
+	fast bump $(bump_part) $(bump_opts)
+bump: deps _bump
 
-ci:
-	pdm sync -d -G :all
-	$(MAKE) _build
+release: deps _build
+	# fast upload -- Use github action instead
+	$(MAKE) _bump bump_opts=--commit
+	$(MAKE) deps
+	fast tag
+
+ci: check _test
+
+_verify: up lock
+	$(MAKE) venv options=--force
+	$(MAKE) venv39 options=--force
+	$(MAKE) venv version=3.12 options=--force
+	$(MAKE) start
+	$(MAKE) deps
+	$(MAKE) check
 	$(MAKE) _check
+	$(MAKE) lint
+	$(MAKE) _lint
+	$(MAKE) test
 	$(MAKE) _test
+	$(MAKE) style
+	$(MAKE) _style
+	$(MAKE) build
+	$(MAKE) _build
+	$(MAKE) ci

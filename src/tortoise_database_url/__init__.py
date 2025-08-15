@@ -21,7 +21,7 @@ __all__ = (
 
 # Re-export imports so they look like they live directly in this package
 for __value in list(locals().values()):
-    if getattr(__value, "__module__", "").startswith("database_url."):
+    if getattr(__value, "__module__", "").startswith("tortoise_database_url."):
         __value.__module__ = __name__
 
 del __value

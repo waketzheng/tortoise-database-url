@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.4.0] - 2025-08-15
+
+### Changed
+
+- Use `tortoise_database_url` to replace `databae_url`
+- Migrate from pdm to uv
+
 ## [0.3.0] - 2025-06-05
 
 ### Changed

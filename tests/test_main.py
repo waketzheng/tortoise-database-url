@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from database_url import (
+from tortoise_database_url import (
     DbDefaultParams,
     EngineEnum,
     InvalidEngine,

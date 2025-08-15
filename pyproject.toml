@@ -14,11 +14,11 @@ repository = "https://github.com/waketzheng/database-url.git"
 
 [dependency-groups]
 dev = [
-    "fast-dev-cli>=0.15.1",
-    "bandit>=1.8.3",
+    "fast-dev-cli>=0.17.0",
+    "bandit>=1.8.6",
     "twine>=6.1.0",
+    "asynctor>=0.8.7",
 ]
-ci = ["coveralls @ git+https://github.com/waketzheng/coveralls-python@4.1.1"]
 
 [tool.ruff]
 line-length = 100
@@ -33,6 +33,10 @@ extend-select = [
     "C4", # flake8-comprehensions
     "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"test_*.py" = ["E501"]
+"scripts/*.py" = ["UP009","UP032"]
 
 [tool.bandit]
 exclude_dirs = ["tests", "scripts", ".venv"]
@@ -55,8 +59,25 @@ exclude_lines = [
 
 [tool.pdm.version]
 source = "file"
-path = "database_url/__init__.py"
+path = "src/tortoise_database_url/__init__.py"
 
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+[tool.pdm.scripts]
+start = {composite = ["pre-commit install", "deps"]}
+pypi = 'pdm run python scripts/uv_pypi.py {args}'
+up = {composite = ['uv lock --upgrade', 'uv sync --frozen --inexact --all-extras', 'pypi']}
+tree = 'pdm list --tree {args}'
+deps = 'pdm run python scripts/deps.py --uv {args}'
+prod = 'uv sync --no-dev {args}'
+fresh = {composite = ["up", "deps --uv", "pypi"]}
+test = 'pdm run fast test {args}'
+style = {composite = ["ruff format", "ruff check --fix {args}"]}
+check = 'pdm run fast check {args}'
+lint = 'pdm run fast lint {args}'
+tag = {composite = ["deps", "pypi --quiet", "pdm run fast tag {args}"]}
+bump = {composite = ["deps", "pypi --quiet", "pdm run fast bump patch --commit {args}"]}
+ci = {composite = ["deps", "check", "test"]}
+release = {composite = ["bump", "tag"]}
