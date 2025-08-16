@@ -1,6 +1,7 @@
 from ._main import (
     DatabaseUrlError,
     DbDefaultParams,
+    DbUrl,
     EngineEnum,
     InvalidEngine,
     from_django_item,
@@ -16,6 +17,7 @@ __all__ = (
     "DatabaseUrlError",
     "DbDefaultParams",
     "EngineEnum",
+    "DbUrl",
 )
 
 

@@ -1,5 +1,15 @@
 # Change Log
 
+## [0.5.0] - 2025-08-16
+
+### Feature
+
+- Add `tortoise_database_url.DbUrl`
+
+### Changed
+- Add `asynctor` to dependencies
+- `EngineEnum` now get the same value as its name, e.g.: `EngineEnum.mysql == 'mysql'`
+
 ## [0.4.0] - 2025-08-15
 
 ### Changed

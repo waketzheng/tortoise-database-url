@@ -7,6 +7,7 @@ import pytest
 
 from tortoise_database_url import (
     DbDefaultParams,
+    DbUrl,
     EngineEnum,
     InvalidEngine,
     from_django_item,
@@ -143,3 +144,24 @@ def test_generate_with_env(monkeypatch) -> None:
         port=os.getenv("DB_PORT"),
     )
     assert db_url == "postgres://postgres:postgres@127.0.0.1:5432/my_db"
+
+
+class TestDbUrl:
+    def test_postgres(self):
+        db_url = DbUrl.postgres("my_db")
+        assert db_url == "postgres://postgres:postgres@127.0.0.1:5432/my_db"
+
+    def test_mysql(self):
+        db_url = DbUrl.mysql("test_1")
+        assert db_url == "mysql://root:123456@127.0.0.1:3306/test_1"
+
+    def test_sqlite(self):
+        assert DbUrl.sqlite(None) == DbUrl.MEMORY_SQLITE
+        assert DbUrl.sqlite("") == DbUrl.DJANGO_DEFAULT_SQLITE
+        assert DbUrl.sqlite("my-file") == "sqlite://my-file"
+
+    def test_build_url(self):
+        assert (
+            DbUrl.build_url("test_db", DbUrl.Engines.oracle)
+            == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
+        )

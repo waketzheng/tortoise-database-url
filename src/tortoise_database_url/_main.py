@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import auto
 from pathlib import Path
 from typing import Any, Literal
 from urllib.parse import quote_plus
+
+from asynctor.compat import StrEnum
 
 
 class DatabaseUrlError(Exception): ...
@@ -24,7 +26,7 @@ class DbDefaultParams:
     oracle: tuple[str, str, int] = "SYSTEM", "123456", 1521
 
 
-class EngineEnum(Enum):
+class EngineEnum(StrEnum):
     sqlite = auto()
     mysql = auto()
     postgres = auto()
@@ -140,3 +142,29 @@ def from_django_item(default: dict[str, Any]) -> str:
     # sqlte:////db.sqlite3
     """
     return _generate(**{k.lower(): v for k, v in default.items()})
+
+
+class DbUrl:
+    MEMORY_SQLITE = "sqlite://:memory:"
+    DJANGO_DEFAULT_SQLITE = "sqlite://db.sqlite3"
+    Engines = EngineEnum
+
+    @staticmethod
+    def build_url(name: str, engine: EngineEnum, **kw: Any) -> str:
+        return _generate(name, engine, **kw)
+
+    @classmethod
+    def mysql(cls, name: str, **kw: Any) -> str:
+        return cls.build_url(name, cls.Engines.mysql, **kw)
+
+    @classmethod
+    def postgres(cls, name: str, **kw: Any) -> str:
+        return cls.build_url(name, cls.Engines.postgres, **kw)
+
+    @classmethod
+    def sqlite(cls, file: str | None = None, **kw: Any) -> str:
+        if file is None:
+            return cls.MEMORY_SQLITE
+        elif not file:
+            return cls.DJANGO_DEFAULT_SQLITE
+        return _generate(file, **kw)

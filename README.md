@@ -21,6 +21,15 @@ pdm add tortoise-database-url
 
 ## Usage
 
+- DbUrl
+```py
+from tortoise_database_url import DbUrl
+
+db_url = DbUrl.mysql('my_db', user='root', password='Me@example.com')
+print(db_url)
+# mysql://root:Me%40example.com@127.0.0.1:3306/my_db
+```
+
 - generate
 
 ```py

@@ -970,6 +970,9 @@ wheels = [
 [[package]]
 name = "tortoise-database-url"
 source = { editable = "." }
+dependencies = [
+    { name = "asynctor" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -980,6 +983,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "asynctor", specifier = ">=0.8.7" }]
 
 [package.metadata.requires-dev]
 dev = [

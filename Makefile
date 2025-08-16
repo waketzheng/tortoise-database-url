@@ -13,11 +13,11 @@ help:
 
 up:
 	uv lock --upgrade
-	uv sync --frozen --inexact
+	$(MAKE) deps options=--frozen
 	python scripts/uv_pypi.py --quiet
 
 lock:
-	uv lock --upgrade
+	uv lock
 	python scripts/uv_pypi.py --quiet
 
 venv:
