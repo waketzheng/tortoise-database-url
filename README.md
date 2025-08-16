@@ -13,8 +13,9 @@ Toolkit for TortoiseORM to generate database url from Django DATABASES item form
 ```bash
 pip install tortoise-database-url
 ```
-Or by pdm:
+Or by uv/pdm:
 ```bash
+uv add tortoise-database-url
 pdm add tortoise-database-url
 ```
 
@@ -23,13 +24,13 @@ pdm add tortoise-database-url
 - generate
 
 ```py
-import database_url
+import tortoise_database_url
 
-db_url = database_url.generate('my_db', engine='mysql', user='root', password='Me@example.com')
+db_url = tortoise_database_url.generate('my_db', engine='mysql', user='root', password='Me@example.com')
 print(db_url)
 # mysql://root:Me%40example.com@127.0.0.1:3306/my_db
 
-db_url = database_url.generate('db_name', engine='postgres')
+db_url = tortoise_database_url.generate('db_name', engine='postgres')
 print(db_url)
 # postgres://postgres:postgres@127.0.0.1:5432/db_name
 ```
@@ -37,7 +38,7 @@ print(db_url)
 - from_django_item
 ```py
 import pathlib
-import database_url
+import tortoise_database_url
 
 DATABASES = {
     "default": {
@@ -46,7 +47,7 @@ DATABASES = {
     },
 }
 
-db_url = database_url.from_django_item(DATABASES["default"])
+db_url = tortoise_database_url.from_django_item(DATABASES["default"])
 print(db_url)
 # sqlte:///tmp/db.sqlite3
 ```

@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import quote_plus
 
 
@@ -56,7 +56,7 @@ def generate(
     user: str | None = None,
     password: str | None = None,
     port: str | int | None = None,
-    **extras,
+    **extras: Any,
 ) -> str:
     """Generate db url with password quoted
 
@@ -84,7 +84,7 @@ def _generate(
     user: str | None = None,
     password: str | None = None,
     port: str | int | None = None,
-    **extras,
+    **extras: Any,
 ) -> str:
     if engine == "sqlite" or (engine := engine.split(".")[-1]) in ("sqlite", "sqlite3"):
         if name is None:
@@ -123,7 +123,7 @@ def _generate(
     return url
 
 
-def from_django_item(default: dict) -> str:
+def from_django_item(default: dict[str, Any]) -> str:
     """Convert Django database to tortoie db_url format
 
     Example::
