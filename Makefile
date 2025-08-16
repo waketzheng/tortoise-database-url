@@ -85,3 +85,7 @@ _verify: up lock
 	$(MAKE) build
 	$(MAKE) _build
 	$(MAKE) ci
+
+publish:
+	# TODO: use github action instead
+	pdm publish
