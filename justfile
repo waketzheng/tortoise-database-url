@@ -109,6 +109,11 @@ tree *args:
 bump *args:
     pdm run bump {{ args }}
 
+# Bump minor version(0.1.1->0.2.0), commit and tag.
+minor *args: deps
+    pdm run fast bump minor --commit {{args}}
+    @just tag
+
 # Create a release tag.
 tag *args:
     pdm run tag {{ args }}
