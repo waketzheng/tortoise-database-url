@@ -79,6 +79,23 @@ def generate(
     return _generate(name, engine, host, user, password, port, **extras)
 
 
+def _resolve(engine) -> tuple[str, str, str, int]:
+    match engine:
+        case "postgres" | "asyncpg" | "psycopg" | "postgresql":
+            engine = engine.replace("postgresql", "postgres")
+            default_params = DbDefaultParams.postgres
+        case "mysql" | "mariadb":
+            engine = "mysql"
+            default_params = DbDefaultParams.mysql
+        case "mssql":
+            default_params = DbDefaultParams.mssql
+        case "oracle":
+            default_params = DbDefaultParams.oracle
+        case _:
+            raise InvalidEngine(engine)
+    return engine, *default_params
+
+
 def _generate(
     name: Path | str | None = "db.sqlite3",
     engine: str = "sqlite",
@@ -92,23 +109,7 @@ def _generate(
         if name is None:
             name = ":memory:"
         return f"sqlite://{name}"
-    if engine in (
-        "postgres",
-        "asyncpg",
-        "psycopg",
-        "postgresql",
-    ):
-        engine = engine.replace("postgresql", "postgres")
-        default_user, default_pw, default_port = DbDefaultParams.postgres
-    elif engine in ("mysql", "mariadb"):
-        engine = "mysql"
-        default_user, default_pw, default_port = DbDefaultParams.mysql
-    elif engine == "mssql":
-        default_user, default_pw, default_port = DbDefaultParams.mssql
-    elif engine == "oracle":
-        default_user, default_pw, default_port = DbDefaultParams.oracle
-    else:
-        raise InvalidEngine(engine)
+    engine, default_user, default_pw, default_port = _resolve(engine)
     if port is None:
         port = default_port
     if host is None:
