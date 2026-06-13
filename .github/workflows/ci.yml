@@ -39,8 +39,10 @@ jobs:
           uv tool install ty
           uv tool install pdm
           echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
+      - name: Install deps
+        run: make deps
       - name: Check code style and Type Hint then Test with pytest
-        run: uv run make ci
+        run: uv run --no-sync make ci
       - name: Upload Coverage
         run: uvx coveralls --service=github
         env:

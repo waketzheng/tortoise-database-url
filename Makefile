@@ -12,33 +12,29 @@ help:
 	@echo  "    build   Build wheel file and tar file from source to dist/"
 
 up:
-	uv lock --upgrade
-	$(MAKE) deps options=--frozen
-	python scripts/uv_pypi.py --quiet
+	@just up
 
 lock:
-	uv lock
-	python scripts/uv_pypi.py --quiet
+	@just lock
 
 venv:
-	pdm venv create $(options) $(version)
+	@just venv $(options) $(version)
 
 venv39:
 	$(MAKE) venv version=3.9
 
 deps:
-	uv sync --all-extras --all-groups --inexact $(options)
+	@just deps $(options)
 
 start:
-	pre-commit install
-	$(MAKE) deps
+	@just start
 
 _check:
 	./scripts/check.py
 check: deps _build _check
 
 _lint:
-	fast lint $(options)
+	@just _lint $(options)
 lint: deps _build _lint
 
 _test:
@@ -50,8 +46,7 @@ _style:
 style: deps _style
 
 _build:
-	rm -fR dist/
-	uv build
+	uv build --clear
 build: deps _build
 
 bump_part = patch

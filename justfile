@@ -43,7 +43,7 @@ prod *args:
 
 # Install pre-commit hooks and dependencies.
 start:
-    pre-commit install
+    prek install
     @just deps
 
 # Format code.
@@ -54,6 +54,9 @@ alias fmt := style
 
 # Lint code.
 lint *args: deps
+    @just _lint {{ args }}
+
+_lint *args:
     pdm run lint {{ args }}
     @just pyright
     @just mypy

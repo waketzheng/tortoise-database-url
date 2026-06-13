@@ -20,6 +20,7 @@ dev = [
     "bandit>=1.8.6",
     "twine>=6.1.0",
     "pytest>=8.4.2",
+    "coverage>=7.10.7",
 ]
 
 [tool.ruff]
@@ -71,7 +72,7 @@ start = {composite = ["pre-commit install", "deps"]}
 pypi = 'pdm run fast pypi {args}'
 up = {composite = ['uv lock --upgrade', 'uv sync --frozen --inexact --all-extras', 'pypi']}
 tree = 'pdm list --tree {args}'
-deps = 'pdm run fast deps --uv {args}'
+deps = 'uv sync --all-extras --all-groups {args}'
 prod = 'uv sync --no-dev {args}'
 fresh = {composite = ["up", "deps --uv", "pypi"]}
 test = 'pdm run fast test {args}'

@@ -62,7 +62,7 @@ if run_command(cmd) != 0:
     sys.exit(1)
 
 if BANDIT:
-    package_name = os.path.basename(work_dir).replace("-", "_")
+    package_name = "src" if os.path.exists("src") else os.path.basename(work_dir).replace("-", "_")
     cmd = PREFIX + "bandit -r " + package_name
     print("--> " + cmd)
     if run_command(cmd) != 0:
