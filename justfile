@@ -17,7 +17,6 @@ venv *args:
 _venv *args:
     pdm venv create --with-pip --with uv {{ args }}
 
-
 # Normalize uv.lock registry URLs to PyPI.
 pypi *args:
     pdm run pypi {{ args }}
@@ -31,6 +30,11 @@ lock *args:
     @just pypi --quiet --reverse
     uv lock {{ args }}
     @just deps --frozen
+    @just pypi --quiet
+
+add *args:
+    @just pypi --quiet --reverse
+    uv add {{ args }}
     @just pypi --quiet
 
 # Upgrade dependencies.
@@ -58,12 +62,17 @@ lint *args: deps
 
 _lint *args:
     pdm run lint {{ args }}
+    @just _codeqc
+
+_codeqc:
     @just pyright
     @just mypy
 
 # Run static checks.
-check *args: deps
+check *args: build
     pdm run check {{ args }}
+    @just _codeqc
+    pdm run twine check dist/*
 
 _uvx *args:
     uvx --python={{ PY_EXEC }} {{ args }}
@@ -72,15 +81,21 @@ pyright path="src" *args: venv
     @just _uvx pyright --pythonpath={{ PY_EXEC }} {{ path }} {{ args }}
 
 mypy path="src" *args:
-    @just _uvx mypy --python-executable={{PY_EXEC}} {{path}} {{args}}
+    @just _uvx mypy --python-executable={{ PY_EXEC }} {{ path }} {{ args }}
 
 # Run tests.
 test *args: deps
+    @just _test {{ args }}
+
+_test *args:
     pdm run test {{ args }}
 
 # Build distribution files.
 build *args: deps
     uv build {{ args }}
+
+_build *args:
+    uv build --offline {{ args }}
 
 # Run the local CI workflow.
 ci:

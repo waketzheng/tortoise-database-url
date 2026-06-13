@@ -5,9 +5,22 @@ authors = [{name="Waket Zheng", email="waketzheng@gmail.com"}]
 readme = "README.md"
 dynamic = ["version"]
 keywords = ["database_url", "tortoise-orm"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "asynctor>=0.8.7",
+    "asynctor>=0.12.11",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 [project.urls]
@@ -16,11 +29,12 @@ repository = "https://github.com/waketzheng/database-url.git"
 
 [dependency-groups]
 dev = [
-    "fast-dev-cli>=0.17.0",
-    "bandit>=1.8.6",
-    "twine>=6.1.0",
-    "pytest>=8.4.2",
+    "fast-dev-cli>=0.23.0",
     "coverage>=7.10.7",
+    "bandit>=1.9.4",
+    "twine>=6.2.0",
+    "pytest>=9.0.3",
+    "ensure-import>=0.6.7",
 ]
 
 [tool.ruff]

@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9, "3.10", 3.11, 3.12, 3.13, 3.14]
+        python-version: ["3.10", 3.11, 3.12, 3.13, 3.14]
     steps:
       - uses: actions/checkout@v6
       - name: Setup Python
@@ -39,10 +39,10 @@ jobs:
           uv tool install ty
           uv tool install pdm
           echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
-      - name: Install deps
-        run: make deps
       - name: Check code style and Type Hint then Test with pytest
-        run: uv run --no-sync make ci
+        run: just lint
+      - name: Test with pytest
+        run: just test
       - name: Upload Coverage
         run: uvx coveralls --service=github
         env:
