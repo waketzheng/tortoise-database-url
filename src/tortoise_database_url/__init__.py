@@ -26,4 +26,4 @@ for __value in list(locals().values()):
     if getattr(__value, "__module__", "").startswith("tortoise_database_url."):
         __value.__module__ = __name__
 
-del __value
+del __value  # pyright:ignore[reportPossiblyUnboundVariable]

@@ -19,7 +19,7 @@ dev = [
     "fast-dev-cli>=0.17.0",
     "bandit>=1.8.6",
     "twine>=6.1.0",
-    "asynctor>=0.8.7",
+    "pytest>=8.4.2",
 ]
 
 [tool.ruff]
@@ -60,7 +60,6 @@ exclude_lines = [
 ]
 
 [tool.pdm.version]
-source = "file"
 path = "src/tortoise_database_url/__init__.py"
 
 [build-system]
@@ -69,16 +68,16 @@ build-backend = "pdm.backend"
 
 [tool.pdm.scripts]
 start = {composite = ["pre-commit install", "deps"]}
-pypi = 'pdm run python scripts/uv_pypi.py {args}'
+pypi = 'pdm run fast pypi {args}'
 up = {composite = ['uv lock --upgrade', 'uv sync --frozen --inexact --all-extras', 'pypi']}
 tree = 'pdm list --tree {args}'
-deps = 'pdm run python scripts/deps.py --uv {args}'
+deps = 'pdm run fast deps --uv {args}'
 prod = 'uv sync --no-dev {args}'
 fresh = {composite = ["up", "deps --uv", "pypi"]}
 test = 'pdm run fast test {args}'
 style = {composite = ["ruff format", "ruff check --fix {args}"]}
-check = 'pdm run fast check {args}'
-lint = 'pdm run fast lint {args}'
+check = 'pdm run fast check --ty {args}'
+lint = 'pdm run fast lint --ty {args}'
 tag = {composite = ["deps", "pypi --quiet", "pdm run fast tag {args}"]}
 bump = {composite = ["deps", "pypi --quiet", "pdm run fast bump patch --commit {args}"]}
 ci = {composite = ["deps", "check", "test"]}

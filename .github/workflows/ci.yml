@@ -33,21 +33,16 @@ jobs:
           key: ${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('**/uv.lock') }}
       - uses: astral-sh/setup-uv@v7
       - uses: astral-sh/ruff-action@v3
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          use_uv: true
-        if: ${{ matrix.python-version != '3.14' }}
-      - name: Set up PDM by pipx
+      - name: Install just/ty/pdm via uv
         run: |
-          pip install --user --upgrade pipx pip
-          pipx install pdm
-        if: ${{ matrix.python-version == '3.14' }}
+          uv tool install rust-just
+          uv tool install ty
+          uv tool install pdm
+          echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
       - name: Check code style and Type Hint then Test with pytest
         run: uv run make ci
       - name: Upload Coverage
-        run: uvx "coveralls @ git+https://github.com/waketzheng/coveralls-python" --service=github
+        run: uvx coveralls --service=github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
@@ -60,6 +55,6 @@ jobs:
     steps:
       - uses: astral-sh/setup-uv@v7
       - name: Finished
-        run: uvx "coveralls @ git+https://github.com/waketzheng/coveralls-python" --service=github --finish
+        run: uvx coveralls --service=github --finish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
