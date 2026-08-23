@@ -7,7 +7,7 @@ dynamic = ["version"]
 keywords = ["database_url", "tortoise-orm"]
 requires-python = ">=3.10"
 dependencies = [
-    "asynctor>=0.12.11",
+    "asynctor>=0.15.0; python_version < '3.11'",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -35,6 +35,7 @@ dev = [
     "twine>=6.2.0",
     "pytest>=9.0.3",
     "ensure-import>=0.6.7",
+    "asynctor>=0.15.0",
 ]
 
 [tool.ruff]
@@ -49,11 +50,15 @@ extend-select = [
     "B",  # flake8-bugbear
     "C4", # flake8-comprehensions
     "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "ANN",
+]
+ignore = [
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `**kw`
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"test_*.py" = ["E501"]
-"scripts/*.py" = ["UP009","UP032"]
+"test_*.py" = ["E501", "ANN"]
+"scripts/*.py" = ["UP009","UP032","ANN"]
 
 [tool.bandit]
 exclude_dirs = ["tests", "scripts", ".venv"]

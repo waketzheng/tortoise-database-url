@@ -104,7 +104,7 @@ def test_generate() -> None:
     assert generate("test_db", engine="oracle") == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
 
     with pytest.raises(InvalidEngine):
-        generate(engine="mongo")  # type:ignore
+        generate(engine="mongo")
 
 
 def test_generate_with_env(monkeypatch) -> None:

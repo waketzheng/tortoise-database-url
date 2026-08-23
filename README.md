@@ -25,7 +25,7 @@ pdm add tortoise-database-url
 ```py
 from tortoise_database_url import DbUrl
 
-db_url = DbUrl.mysql('my_db', user='root', password='Me@example.com')
+db_url = DbUrl.mysql("my_db", user="root", password="Me@example.com")
 print(db_url)
 # mysql://root:Me%40example.com@127.0.0.1:3306/my_db
 ```
@@ -35,11 +35,13 @@ print(db_url)
 ```py
 import tortoise_database_url
 
-db_url = tortoise_database_url.generate('my_db', engine='mysql', user='root', password='Me@example.com')
+db_url = tortoise_database_url.generate(
+    "my_db", engine="mysql", user="root", password="Me@example.com"
+)
 print(db_url)
 # mysql://root:Me%40example.com@127.0.0.1:3306/my_db
 
-db_url = tortoise_database_url.generate('db_name', engine='postgres')
+db_url = tortoise_database_url.generate("db_name", engine="postgres")
 print(db_url)
 # postgres://postgres:postgres@127.0.0.1:5432/db_name
 ```
@@ -52,7 +54,7 @@ import tortoise_database_url
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": pathlib.Path("/tmp") / "db.sqlite3"
+        "NAME": pathlib.Path("/tmp") / "db.sqlite3",
     },
 }
 

@@ -1,13 +1,34 @@
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
-from enum import auto
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal
 from urllib.parse import quote_plus
 
-from asynctor.compat import StrEnum
+if sys.version_info >= (3, 11):
+    from enum import StrEnum, auto
+else:
+    from asynctor._enum import StrEnum, auto
+
+
+if TYPE_CHECKING:
+
+    class EngineEnum(StrEnum):
+        sqlite = "sqlite"
+        mysql = "mysql"
+        postgres = "postgres"
+        mssql = "mssql"
+        oracle = "oracle"
+else:
+    # 2026-08-23 ty 0.0.73 raises: Expected `str`, found `auto`
+    class EngineEnum(StrEnum):
+        sqlite = auto()
+        mysql = auto()
+        postgres = auto()
+        mssql = auto()
+        oracle = auto()
 
 
 class DatabaseUrlError(Exception): ...
@@ -26,14 +47,6 @@ class DbDefaultParams:
     oracle: tuple[str, str, int] = "SYSTEM", "123456", 1521
 
 
-class EngineEnum(StrEnum):
-    sqlite = auto()
-    mysql = auto()
-    postgres = auto()
-    mssql = auto()
-    oracle = auto()
-
-
 def should_quote(value: str) -> bool:
     return not re.match(r"[-%\w]+$", value)
 
@@ -45,7 +58,6 @@ def generate(
         "sqlite",
         "postgres",
         "mysql",
-        "postgres",
         "mssql",
         "oracle",
         "sqlite3",
@@ -53,7 +65,8 @@ def generate(
         "psycopg",
         "postgresql",
         "mariadb",
-    ] = "sqlite",
+    ]
+    | str = "sqlite",
     host: str | None = None,
     user: str | None = None,
     password: str | None = None,
@@ -79,7 +92,7 @@ def generate(
     return _generate(name, engine, host, user, password, port, **extras)
 
 
-def _resolve(engine) -> tuple[str, str, str, int]:
+def _resolve(engine: str | EngineEnum) -> tuple[str, str, str, int]:
     match engine:
         case "postgres" | "asyncpg" | "psycopg" | "postgresql":
             engine = engine.replace("postgresql", "postgres")
@@ -98,7 +111,7 @@ def _resolve(engine) -> tuple[str, str, str, int]:
 
 def _generate(
     name: Path | str | None = "db.sqlite3",
-    engine: str = "sqlite",
+    engine: str | EngineEnum = "sqlite",
     host: str | None = None,
     user: str | None = None,
     password: str | None = None,
@@ -146,21 +159,21 @@ def from_django_item(default: dict[str, Any]) -> str:
 
 
 class DbUrl:
-    MEMORY_SQLITE = "sqlite://:memory:"
-    DJANGO_DEFAULT_SQLITE = "sqlite://db.sqlite3"
-    Engines = EngineEnum
+    MEMORY_SQLITE: Final[str] = "sqlite://:memory:"
+    DJANGO_DEFAULT_SQLITE: Final[str] = "sqlite://db.sqlite3"
+    Engines: Final[type[EngineEnum]] = EngineEnum
 
     @staticmethod
-    def build_url(name: str, engine: EngineEnum, **kw: Any) -> str:
+    def build_url(name: str, engine: str | EngineEnum, **kw: Any) -> str:
         return _generate(name, engine, **kw)
 
     @classmethod
     def mysql(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, cls.Engines.mysql, **kw)
+        return cls.build_url(name, EngineEnum.mysql, **kw)
 
     @classmethod
     def postgres(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, cls.Engines.postgres, **kw)
+        return cls.build_url(name, EngineEnum.postgres, **kw)
 
     @classmethod
     def sqlite(cls, file: str | None = None, **kw: Any) -> str:

@@ -1,5 +1,17 @@
 # Change Log
 
+## [0.7.0] - 2026-08-23
+
+### Changed
+- refactor: enable ruff rule `ANN`
+- Only requires `asynctor` when python version less than 3.11
+
+## [0.6.0] - 2026-06-13
+
+### Changed
+- refactor: split overly long function
+- feat: drop support for py39
+
 ## [0.5.0] - 2025-08-16
 
 ### Feature
