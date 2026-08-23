@@ -137,7 +137,7 @@ def test_generate_with_env(monkeypatch) -> None:
     assert db_url == "postgres://postgres:postgres@127.0.0.1:5432/my_db"
     db_url = generate(
         "my_db",
-        engine=EngineEnum.postgres,
+        engine=EngineEnum.postgres,  # ty:ignore[invalid-argument-type]
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASS"),
         host=os.getenv("DB_HOST"),
@@ -162,6 +162,6 @@ class TestDbUrl:
 
     def test_build_url(self):
         assert (
-            DbUrl.build_url("test_db", DbUrl.Engines.oracle)
+            DbUrl.build_url("test_db", DbUrl.Engines.oracle)  # ty:ignore[invalid-argument-type]
             == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
         )

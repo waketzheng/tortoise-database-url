@@ -4,7 +4,7 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final, Literal
+from typing import Any, Final, Literal
 from urllib.parse import quote_plus
 
 if sys.version_info >= (3, 11):
@@ -13,28 +13,18 @@ else:
     from asynctor._enum import StrEnum, auto
 
 
-if TYPE_CHECKING:
-
-    class EngineEnum(StrEnum):
-        sqlite = "sqlite"
-        mysql = "mysql"
-        postgres = "postgres"
-        mssql = "mssql"
-        oracle = "oracle"
-else:
-    # 2026-08-23 ty 0.0.73 raises: Expected `str`, found `auto`
-    class EngineEnum(StrEnum):
-        sqlite = auto()
-        mysql = auto()
-        postgres = auto()
-        mssql = auto()
-        oracle = auto()
-
-
 class DatabaseUrlError(Exception): ...
 
 
 class InvalidEngine(DatabaseUrlError): ...
+
+
+class EngineEnum(StrEnum):
+    sqlite = auto()
+    mysql = auto()
+    postgres = auto()
+    mssql = auto()
+    oracle = auto()
 
 
 @dataclass
@@ -169,11 +159,11 @@ class DbUrl:
 
     @classmethod
     def mysql(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, EngineEnum.mysql, **kw)
+        return cls.build_url(name, EngineEnum.mysql, **kw)  # ty:ignore[invalid-argument-type]
 
     @classmethod
     def postgres(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, EngineEnum.postgres, **kw)
+        return cls.build_url(name, EngineEnum.postgres, **kw)  # ty:ignore[invalid-argument-type]
 
     @classmethod
     def sqlite(cls, file: str | None = None, **kw: Any) -> str:
