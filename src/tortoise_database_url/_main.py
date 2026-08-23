@@ -159,11 +159,11 @@ class DbUrl:
 
     @classmethod
     def mysql(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, EngineEnum.mysql, **kw)  # ty:ignore[invalid-argument-type]
+        return cls.build_url(name, str(EngineEnum.mysql), **kw)
 
     @classmethod
     def postgres(cls, name: str, **kw: Any) -> str:
-        return cls.build_url(name, EngineEnum.postgres, **kw)  # ty:ignore[invalid-argument-type]
+        return cls.build_url(name, str(EngineEnum.postgres), **kw)
 
     @classmethod
     def sqlite(cls, file: str | None = None, **kw: Any) -> str:
