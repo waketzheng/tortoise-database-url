@@ -45,7 +45,7 @@ jobs:
           echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
       - name: Check code style and Type Hint then Test with pytest
         run: |
-          just init
+          just
           just lint
       - name: Test with pytest
         run: just test
