@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.8.0] - 2025-09-26
+
+### Feature
+
+- Add `tortoise_database_url.build_conf`
+
 ## [0.7.0] - 2026-08-23
 
 ### Changed
