@@ -43,6 +43,7 @@ jobs:
           uv tool install rust-just
           uv tool install ty
           uv tool install pdm
+          uv tool install fast-dev-cli
           echo "$(uv tool dir --bin)" >> "$GITHUB_PATH"
       - name: Check code style and Type Hint then Test with pytest
         run: |

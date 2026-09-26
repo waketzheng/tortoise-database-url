@@ -29,7 +29,6 @@ repository = "https://github.com/waketzheng/database-url.git"
 
 [dependency-groups]
 dev = [
-    "fast-dev-cli>=0.23.0",
     "coverage>=7.10.7",
     "bandit>=1.9.4",
     "twine>=6.2.0",

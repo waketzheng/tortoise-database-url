@@ -19,6 +19,9 @@ class DatabaseUrlError(Exception): ...
 class InvalidEngine(DatabaseUrlError): ...
 
 
+class DbConfError(DatabaseUrlError): ...
+
+
 class EngineEnum(StrEnum):
     sqlite = auto()
     mysql = auto()
@@ -27,7 +30,7 @@ class EngineEnum(StrEnum):
     oracle = auto()
 
 
-@dataclass
+@dataclass(frozen=True)
 class DbDefaultParams:
     """Db param tuple -- username, password, port"""
 
@@ -146,6 +149,56 @@ def from_django_item(default: dict[str, Any]) -> str:
     # sqlte:////db.sqlite3
     """
     return _generate(**{k.lower(): v for k, v in default.items()})
+
+
+def build_conf(
+    db_url: Path | str | tuple[str, str | EngineEnum] | None = None,
+    app_label: str = "models",
+    models: list[str] | None = None,
+    use_tz: bool = False,
+    timezone: str | None = "Asia/Shanghai",
+) -> dict[str, Any]:
+    if db_url is None:
+        db_url = _generate()
+    elif isinstance(db_url, str):
+        if "://" not in db_url:
+            if db_url.endswith((".sqlite3", ".sqlite")) or (
+                ":" not in db_url and Path(db_url).parent.is_dir()
+            ):
+                db_url = "sqlite://" + db_url
+            else:
+                port_str = db_url.split("/")[0].split(":")[-1]
+                try:
+                    port = int(port_str)
+                except ValueError:
+                    raise DatabaseUrlError(f"Can not determine engine for {db_url=}") from None
+                for engine in ("postgres", "mysql", "mssql", "oracle"):
+                    if port == getattr(DbDefaultParams, engine)[-1]:
+                        db_url = engine + "://" + db_url
+                        break
+                else:
+                    raise DatabaseUrlError(f"Can not determine engine for {db_url=}")
+    elif isinstance(db_url, Path):
+        db_url = "sqlite://" + db_url.as_posix()
+    else:
+        db_url = generate(*db_url)
+    if models is None:
+        if Path("models.py").exists():
+            models = ["models"]
+        elif Path("app/models.py").exists():
+            models = ["app.models"]
+        elif (d := Path("models")).is_dir() or (d := Path("app/models")).is_dir():
+            p = d.as_posix().replace("/", ".")
+            models = [f"{p}.{stem}" for f in d.glob("*.py") if not (stem := f.stem).startswith("_")]
+        else:
+            raise DbConfError("Can not determine models")
+    conf = {
+        "connections": {"default": db_url},
+        "apps": {"models": {"models": models}},
+        "use_tz": use_tz,
+        "timezone": timezone,
+    }
+    return conf
 
 
 class DbUrl:
