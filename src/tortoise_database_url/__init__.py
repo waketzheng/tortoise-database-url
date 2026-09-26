@@ -1,9 +1,11 @@
 from ._main import (
     DatabaseUrlError,
+    DbConfError,
     DbDefaultParams,
     DbUrl,
     EngineEnum,
     InvalidEngine,
+    build_conf,
     from_django_item,
     generate,
 )
@@ -11,11 +13,13 @@ from ._main import (
 __version__ = "0.7.2"
 __all__ = (
     "DatabaseUrlError",
+    "DbConfError",
     "DbDefaultParams",
     "DbUrl",
     "EngineEnum",
     "InvalidEngine",
     "__version__",
+    "build_conf",
     "from_django_item",
     "generate",
 )

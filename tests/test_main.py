@@ -6,10 +6,13 @@ from pathlib import Path
 import pytest
 
 from tortoise_database_url import (
+    DatabaseUrlError,
+    DbConfError,
     DbDefaultParams,
     DbUrl,
     EngineEnum,
     InvalidEngine,
+    build_conf,
     from_django_item,
     generate,
 )
@@ -165,3 +168,101 @@ class TestDbUrl:
             DbUrl.build_url("test_db", DbUrl.Engines.oracle)  # ty:ignore[invalid-argument-type]
             == "oracle://SYSTEM:123456@127.0.0.1:1521/test_db"
         )
+
+
+class TestBuildConf:
+    def test_db_url_is_none(self):
+        assert build_conf(models=[]) == {
+            "apps": {"models": {"models": []}},
+            "connections": {"default": "sqlite://db.sqlite3"},
+            "timezone": "Asia/Shanghai",
+            "use_tz": False,
+        }
+
+    @pytest.mark.parametrize("value", ["my.db", "data/my.db", "/data/my.db"])
+    def test_db_url_is_path(self, value: str):
+        assert build_conf(Path(value), models=[]) == {
+            "apps": {"models": {"models": []}},
+            "connections": {"default": f"sqlite://{value}"},
+            "timezone": "Asia/Shanghai",
+            "use_tz": False,
+        }
+
+    @pytest.mark.parametrize(
+        "db_url", ["sqlite://my.db", "mysql://localhost", "postgres://no-mater-what"]
+    )
+    def test_db_url_is_full_str(self, db_url: str):
+        assert build_conf(db_url, models=[]) == {
+            "apps": {"models": {"models": []}},
+            "connections": {"default": db_url},
+            "timezone": "Asia/Shanghai",
+            "use_tz": False,
+        }
+
+    @pytest.mark.parametrize(
+        "db",
+        [
+            ("db.sqlite", "sqlite"),
+            ("root:123456@127.0.0.1:3306/db", "mysql"),
+            ("postgres:postgres@127.0.0.1:5432/db", "postgres"),
+        ],
+    )
+    def test_db_url_without_engine(self, db: tuple[str, str]):
+        uri, engine = db
+        db_url = engine + "://" + uri
+        assert build_conf(uri, models=[]) == {
+            "apps": {"models": {"models": []}},
+            "connections": {"default": db_url},
+            "timezone": "Asia/Shanghai",
+            "use_tz": False,
+        }
+        db_name = uri.split("/")[-1]
+        assert build_conf((db_name, engine), models=[]) == {
+            "apps": {"models": {"models": []}},
+            "connections": {"default": db_url},
+            "timezone": "Asia/Shanghai",
+            "use_tz": False,
+        }
+
+    def test_db_url_raises(self):
+        with pytest.raises(DatabaseUrlError):
+            build_conf("unknown-port:1234", models=[])
+        with pytest.raises(DatabaseUrlError):
+            build_conf("invalid-port:a", models=[])
+        with pytest.raises(DbConfError):
+            build_conf()
+
+
+class TestGuessModels:
+    def test_with_models_py(self, tmp_workdir: Path):
+        Path("models.py").touch()
+        assert build_conf()["apps"]["models"]["models"] == ["models"]
+
+    def test_with_app_models_py(self, tmp_workdir: Path):
+        file = Path("app/models.py")
+        file.parent.mkdir()
+        file.touch()
+        assert build_conf()["apps"]["models"]["models"] == ["app.models"]
+
+    def test_with_models_dir(self, tmp_workdir: Path):
+        d = Path("models")
+        d.mkdir()
+        file = d / "users.py"
+        file.touch()
+        assert build_conf()["apps"]["models"]["models"] == ["models.users"]
+        file = d / "tasks.py"
+        file.touch()
+        assert sorted(build_conf()["apps"]["models"]["models"]) == ["models.tasks", "models.users"]
+
+    def test_with_app_models_dir(self, tmp_workdir: Path):
+        d = Path("app/models")
+        d.mkdir(parents=True)
+        file = d / "users.py"
+        file.touch()
+        assert build_conf()["apps"]["models"]["models"] == ["app.models.users"]
+        file = d / "tasks.py"
+        file.touch()
+        assert sorted(build_conf()["apps"]["models"]["models"]) == [
+            "app.models.tasks",
+            "app.models.users",
+        ]
